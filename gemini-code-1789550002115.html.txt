@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>英単語暗記ゲーム</title>
+    
+    <!-- CSSファイルを接続するコード -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <h1>このゲームは英単語を楽しく暗記できるゲームです。</h1>
+    <p class="sub-title">お友達や家族と一緒に暗記できます</p>
+
+    <div class="game-link-container">
+        <a href="https://hedgebirdcat.github.io/Hatchoria/" target="_blank" rel="noopener noreferrer">
+            ゲームはこちらから
+        </a>
+    </div>
+
+    <p class="description">このサイトではこのゲームについてご説明いたします。</p>
+
+    <div class="contents-box">
+        <h2 class="contents-title">目次<span>contents</span></h2>
+        <ul class="contents-list">
+            <li>このゲームの目的</li>
+            <li>遊び方</li>
+            <li>プライバシーポリシー</li>
+            <li>著作権について</li>
+        </ul>
+    </div>
+
+</body>
+</html>
