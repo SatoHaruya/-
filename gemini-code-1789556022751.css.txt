@@ -1,0 +1,122 @@
+/* Google Fonts から洗練されたゴシック体（Noto Sans JP）を読み込み */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@500;700;900&display=swap');
+
+/* 全体の基本設定（左寄せ配置） */
+body {
+    font-family: 'Noto Sans JP', "Helvetica Neue", Arial, sans-serif;
+    color: #1a1a1a;
+    background-color: #f4f6f8;  /* スタイリッシュなライトグレー */
+    line-height: 1.7;
+    max-width: 800px;
+    margin: 50px auto;
+    padding: 0 20px;
+    letter-spacing: 0.03em;     /* 文字間隔を広げてシャープな印象に */
+    text-align: left;           /* 基本配置を左寄せに指定 */
+}
+
+/* メインの見出し（左寄せ） */
+h1 {
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: #0f172a;
+    text-align: left;
+    line-height: 1.5;
+    margin-bottom: 8px;
+}
+
+/* サブ見出し（左寄せ） */
+.sub-title {
+    font-size: 1rem;
+    color: #64748b;
+    text-align: left;
+    font-weight: 500;
+    margin-top: 0;
+    margin-bottom: 32px;
+}
+
+/* ゲームへのリンクボタン（左寄せ配置） */
+.game-link-container {
+    text-align: left;
+    margin: 32px 0 40px;
+}
+
+.game-link-container a {
+    display: inline-block;
+    padding: 16px 40px;
+    background: linear-gradient(135deg, #2563eb, #1d4ed8); /* 青グラデーション */
+    color: #ffffff;
+    font-size: 1.1rem;
+    font-weight: 700;
+    text-decoration: none;
+    border-radius: 8px;           /* シャープな角丸 */
+    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+    transition: all 0.25s ease;
+    letter-spacing: 0.05em;
+}
+
+.game-link-container a:hover {
+    background: linear-gradient(135deg, #1d4ed8, #1e40af);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.45);
+}
+
+/* 目次エリアの設定（左側にアクセントライン） */
+.contents-box {
+    background-color: #ffffff;
+    border-left: 5px solid #2563eb;
+    border-radius: 8px;
+    padding: 28px 32px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+}
+
+.contents-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin-top: 0;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+}
+
+.contents-title span {
+    font-size: 0.85rem;
+    color: #94a3b8;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+/* 目次リスト */
+.contents-list {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+}
+
+.contents-list li {
+    font-size: 1rem;
+    font-weight: 500;
+    margin-bottom: 14px;
+    position: relative;
+    padding-left: 24px;
+    color: #334155;
+    transition: color 0.2s ease;
+}
+
+.contents-list li:last-child {
+    margin-bottom: 0;
+}
+
+/* 先頭のアイコン風マーク */
+.contents-list li::before {
+    content: "▶";
+    font-size: 0.7rem;
+    color: #2563eb;
+    position: absolute;
+    left: 0;
+    top: 2px;
+}
