@@ -4,59 +4,85 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>英単語暗記ゲーム</title>
-    
-    <!-- CSSファイルを接続するコード -->
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* 非表示用CSS */
+        .page-content {
+            display: none;
+        }
+        /* 表示用CSS */
+        .page-content.active {
+            display: block;
+        }
+        /* メニューのスタイル */
+        .nav-menu {
+            display: flex;
+            gap: 10px;
+            list-style: none;
+            padding: 0;
+        }
+        .nav-menu button {
+            padding: 10px 15px;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
 
-    <h1>ハッチョリアの提供する英単語暗記ゲームは英単語を楽しく暗記できる無料無広告のゲームです。</h1>
-    <p class="sub-title">お友達や家族と一緒に暗記できます</p>
+    <h1>ハッチョリアの提供する英単語暗記ゲーム</h1>
 
-    <div class="game-link-container">
-        <a href="https://hedgebirdcat.github.io/Hatchoria/" target="_blank" rel="noopener noreferrer">
-            ゲームはこちらから
-        </a>
+    <!-- 画面切り替えボタン -->
+    <ul class="nav-menu">
+        <li><button onclick="showPage('home')">ホーム</button></li>
+        <li><button onclick="showPage('asobikata')">遊び方</button></li>
+        <li><button onclick="showPage('online')">オンライン対戦</button></li>
+        <li><button onclick="showPage('privacy')">プライバシーポリシー</button></li>
+    </ul>
+
+    <!-- 画面1：ホーム -->
+    <div id="page-home" class="page-content active">
+        <p class="sub-title">お友達や家族と一緒に暗記できます</p>
+        <div class="game-link-container">
+            <a href="https://hedgebirdcat.github.io/Hatchoria/" target="_blank" rel="noopener noreferrer">
+                ゲームはこちらから
+            </a>
+        </div>
     </div>
 
-
-    <div class="contents-box">
-        <h2 class="contents-title">目次<span>contents</span></h2>
-        <ul class="contents-list">
-            <li><a href="#mokuteki">このゲームの目的</a></li>
-            <li><a href="#asobikata">遊び方</a></li>
-            <li><a href="#online">オンライン対戦について</a></li>
-            <li><a href="#police">プライバシーポリシー</a></li>
-            <li><a href="#tyosakuken">著作権について</a></li>
-        </ul>
-    </div>
-
-    <section id="mokuteki">
+    <!-- 画面2：目的・遊び方 -->
+    <div id="page-asobikata" class="page-content">
         <h2>このゲームの目的</h2>
-        <p1>このゲームは，全ての英語を学ぶ日本人の単語力を向上させるためのゲームです。</p1>
-        <p2>単語力を磨くための道具としてゲーム感覚でご利用ください。</p2>
-        <p3> また，その他の悪用目的，営利目的（教育道具として活用し，オプション料などを要求することも含む）の使用はご遠慮ください。</p3>
-    </section>
-    <section id="asobikata">
+        <p>このゲームは，全ての英語を学ぶ日本人の単語力を向上させるためのゲームです。</p>
         <h2>遊び方</h2>
-        <p4>育成を開始すると，単語の問題が出てきます。</p4>
-        <p5>答えてXPを稼ぎましょう</p5>
-        <p6>レベルが1上がるごとに10コイン稼ぎます。</p6>
-        <p7>コインが貯まったらガチャを引き，強化しましょう。</p7>
-    </section>
-    <section id="online">
+        <p>育成を開始すると，単語の問題が出てきます。</p>
+        <p>答えてXPを稼ぎましょう</p>
+    </div>
+
+    <!-- 画面3：オンライン対戦 -->
+    <div id="page-online" class="page-content">
         <h2>オンライン対戦について</h2>
-        <p8>お友達や家族と一緒にしたいときにはオンライン対戦をしましょう。</p8>
-        <p9>インターネットがあれば誰でもプレイすることができます。（通信量がかかる可能性がございます。）</p9>
-        <p10>遊びたい相手にフレンドコードを送り，友達に追加してもらいましょう。それさえすれば誰でもプレイできるようになります。</p10>  
-    </section>
-    　　 <section id="police">
-           <h2>プライバシーポリシー</h2>
-           <p11>ご利用いただくためにアカウント作成時に入力していただいたメールアドレスは，利用者のみなさんに大切なお知らせをお送りすること以外には
-           使用致しませんとともに，第三者に共有することも致しません。ご安心ください。何か気になる点がありましたら，
-           ハッチョリアまでお願い致します</p11>
-       </section>
+        <p>お友達や家族と一緒にしたいときにはオンライン対戦をしましょう。</p>
+    </div>
 
+    <!-- 画面4：プライバシーポリシー -->
+    <div id="page-privacy" class="page-content">
+        <h2>プライバシーポリシー</h2>
+        <p>ご利用いただくためにアカウント作成時に入力していただいたメールアドレスは...</p>
+    </div>
 
+    <!-- 画面切り替え用JavaScript -->
+    <script>
+        function showPage(pageId) {
+            // 全ての画面を隠す
+            const pages = document.querySelectorAll('.page-content');
+            pages.forEach(page => page.classList.remove('active'));
+
+            // 指定された画面だけ表示する
+            const targetPage = document.getElementById('page-' + pageId);
+            if (targetPage) {
+                targetPage.classList.add('active');
+            }
+        }
+    </script>
 </body>
 </html>
