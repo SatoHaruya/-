@@ -45,6 +45,33 @@
             top: 15px;
             right: 15px;
         }
+        /* サーバー運行情報のランプ */
+        .server-status-dot {
+            height: 8px;
+            width: 8px;
+            background-color: #86efac;
+            border-radius: 50%;
+            display: inline-block;
+            transition: background-color 0.3s ease;
+            /* 点滅アニメーションの追加 */
+            animation: pulse 2s infinite ease-in-out;
+        }
+
+        /* ふんわり点滅させるアニメーション定義 */
+        @keyframes pulse {
+            0% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.4;
+                transform: scale(0.85);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
 
         .server-status-badge {
             background-color: rgba(255, 255, 255, 0.2);
