@@ -1,7 +1,7 @@
 /* Google Fonts から洗練されたゴシック体（Noto Sans JP）を読み込み */
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@500;700;900&display=swap');
 
-/* 全体の基本設定（左寄せ配置） */
+/* 全体の基本設定左寄せ配置） */
 body {
     font-family: 'Noto Sans JP', "Helvetica Neue", Arial, sans-serif;
     color: #1a1a1a;
