@@ -464,5 +464,48 @@ z　<!DOCTYPE html>
 
         </div>
     </footer>
+    <!-- サーバー運行情報 -->
+<div style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 20px;">
+    <div id="server-status-box" style="background-color: #f0fdf4; border: 1px solid #bbf7d0; padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; display: flex; align-items: center; gap: 8px;">
+        <span id="server-status-dot" style="height: 8px; width: 8px; background-color: #22c55e; border-radius: 50%; display: inline-block;"></span>
+        <span id="server-status-text" style="color: #166534; font-weight: bold;">サーバー運行情報：正常</span>
+    </div>
+</div>
+
+<script>
+    // サーバーの状態を変更する関数（ステータスコード: 'normal', 'delay', 'error'）
+    function updateServerStatus(status) {
+        const box = document.getElementById('server-status-box');
+        const dot = document.getElementById('server-status-dot');
+        const text = document.getElementById('server-status-text');
+
+        if (status === 'normal') {
+            // 正常（緑）
+            box.style.backgroundColor = '#f0fdf4';
+            box.style.borderColor = '#bbf7d0';
+            dot.style.backgroundColor = '#22c55e';
+            text.style.color = '#166534';
+            text.textContent = 'サーバー運行情報：正常';
+        } else if (status === 'delay') {
+            // 遅延（黄/オレンジ）
+            box.style.backgroundColor = '#fffbebe';
+            box.style.borderColor = '#fde68a';
+            dot.style.backgroundColor = '#f59e0b';
+            text.style.color = '#92400e';
+            text.textContent = 'サーバー運行情報：遅延発生中';
+        } else if (status === 'error') {
+            // 異常・障害（赤）
+            box.style.backgroundColor = '#fef2f2';
+            box.style.borderColor = '#fecaca';
+            dot.style.backgroundColor = '#ef4444';
+            text.style.color = '#991b1b';
+            text.textContent = 'サーバー運行情報：異常発生中';
+        }
+    }
+
+    // 例: 状態を変更したい時はJavaScriptで以下のように呼び出せます
+    // updateServerStatus('delay'); // 遅延にしたい時
+    // updateServerStatus('error'); // 異常にしたい時
+</script>
 </body>
 </html>
