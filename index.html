@@ -3,85 +3,435 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>英単語暗記ゲーム</title>
-    <link rel="stylesheet" href="style.css">
+    <title>ハッチョリア - 英単語暗記ゲーム</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        meadow: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            200: '#bbf7d0',
+                            300: '#86efac',
+                            400: '#4ade80',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#14532d',
+                        },
+                        sunshine: {
+                            400: '#fbbf24',
+                            500: '#f59e0b',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"Kosugi Maru"', '"M PLUS Rounded 1c"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts for rounded friendly Japanese text -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kosugi+Maru&family=M+PLUS+Rounded+1c:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+    <!-- FontAwesome icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-        /* 非表示用CSS */
+        body {
+            font-family: 'M PLUS Rounded 1c', 'Kosugi Maru', sans-serif;
+            background-color: #f2fbf4;
+            background-image: 
+                radial-gradient(at 10% 10%, rgba(187, 247, 208, 0.4) 0px, transparent 50%),
+                radial-gradient(at 90% 80%, rgba(254, 240, 138, 0.3) 0px, transparent 50%);
+            background-attachment: fixed;
+        }
+
+        /* 画面切替のアニメーション */
         .page-content {
             display: none;
+            opacity: 0;
+            transform: translateY(12px) scale(0.99);
+            transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        /* 表示用CSS */
         .page-content.active {
             display: block;
+            opacity: 1;
+            transform: translateY(0) scale(1);
         }
-        /* メニューのスタイル */
-        .nav-menu {
-            display: flex;
-            gap: 10px;
-            list-style: none;
-            padding: 0;
+
+        /* 草原ウェーブアニメーション */
+        @keyframes floatSlow {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-6px) rotate(2deg); }
         }
-        .nav-menu button {
-            padding: 10px 15px;
-            cursor: pointer;
+        .animate-float {
+            animation: floatSlow 4s ease-in-out infinite;
+        }
+
+        /* アクションボタンのパルス・光沢 */
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 10px 25px -5px rgba(34, 197, 94, 0.5), 0 0 15px rgba(250, 204, 21, 0.4); }
+            50% { box-shadow: 0 15px 30px -5px rgba(34, 197, 94, 0.7), 0 0 25px rgba(250, 204, 21, 0.7); }
+        }
+        .cta-pulse {
+            animation: pulseGlow 2.5s infinite;
+        }
+
+        /* 草原の丘デザイン背景 */
+        .meadow-hero-bg {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 50%, #15803d 100%);
+            position: relative;
+        }
+        .meadow-hero-bg::before {
+            content: "";
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 24px;
+            background: radial-gradient(50% 100% at 50% 100%, #f2fbf4 100%, transparent 0);
+            background-size: 80px 100%;
         }
     </style>
 </head>
-<body>
+<body class="text-slate-800 min-h-screen flex flex-col selection:bg-meadow-200 selection:text-meadow-900">
 
-    <h1>ハッチョリアの提供する英単語暗記ゲーム</h1>
+    <!-- ヘッダー / 草原風ナビゲーション -->
+    <header class="bg-white/90 backdrop-blur-md border-b-2 border-meadow-200 sticky top-0 z-50 shadow-sm transition-all">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 py-3 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <!-- ブランドロゴ・タイトル -->
+            <div class="flex items-center gap-3 cursor-pointer group" onclick="showPage('home')">
+                <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-meadow-500 to-meadow-300 flex items-center justify-center text-white text-2xl font-black shadow-md shadow-meadow-500/20 group-hover:scale-105 transition-transform">
+                    <i class="fa-solid fa-seedling"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-extrabold text-meadow-900 leading-tight tracking-wide flex items-center gap-1.5">
+                        ハッチョリア
+                        <span class="text-xs px-2 py-0.5 bg-meadow-100 text-meadow-700 rounded-full font-bold">英単語</span>
+                    </h1>
+                    <span class="text-xs text-slate-500 font-medium">楽しく学べる英単語暗記ゲーム</span>
+                </div>
+            </div>
 
-    <!-- 画面切り替えボタン -->
-    <ul class="nav-menu">
-        <li><button onclick="showPage('home')">ホーム</button></li>
-        <li><button onclick="showPage('asobikata')">遊び方</button></li>
-        <li><button onclick="showPage('online')">オンライン対戦</button></li>
-        <li><button onclick="showPage('privacy')">プライバシーポリシー</button></li>
-    </ul>
-
-    <!-- 画面1：ホーム -->
-    <div id="page-home" class="page-content active">
-        <p class="sub-title">お友達や家族と一緒に暗記できます</p>
-        <div class="game-link-container">
-            <a href="https://hedgebirdcat.github.io/Hatchoria/" target="_blank" rel="noopener noreferrer">
-                ゲームはこちらから
-            </a>
+            <!-- タブナビゲーション -->
+            <nav class="flex items-center bg-meadow-100/80 p-1.5 rounded-2xl w-full sm:w-auto overflow-x-auto border border-meadow-200/60">
+                <button id="tab-home" onclick="showPage('home')" class="nav-btn flex-1 sm:flex-none px-4 py-2 text-sm font-bold rounded-xl transition-all text-meadow-800 bg-white shadow-sm shadow-meadow-900/5">
+                    <i class="fa-solid fa-leaf text-meadow-500 mr-1.5"></i>ホーム
+                </button>
+                <button id="tab-asobikata" onclick="showPage('asobikata')" class="nav-btn flex-1 sm:flex-none px-4 py-2 text-sm font-bold text-meadow-700 hover:text-meadow-900 hover:bg-white/50 rounded-xl transition-all">
+                    <i class="fa-solid fa-gamepad mr-1.5"></i>遊び方
+                </button>
+                <button id="tab-online" onclick="showPage('online')" class="nav-btn flex-1 sm:flex-none px-4 py-2 text-sm font-bold text-meadow-700 hover:text-meadow-900 hover:bg-white/50 rounded-xl transition-all">
+                    <i class="fa-solid fa-users-rays mr-1.5"></i>オンライン
+                </button>
+                <button id="tab-privacy" onclick="showPage('privacy')" class="nav-btn flex-1 sm:flex-none px-4 py-2 text-sm font-bold text-meadow-700 hover:text-meadow-900 hover:bg-white/50 rounded-xl transition-all">
+                    <i class="fa-solid fa-shield-heart mr-1.5"></i>ポリシー
+                </button>
+            </nav>
         </div>
-    </div>
+    </header>
 
-    <!-- 画面2：目的・遊び方 -->
-    <div id="page-asobikata" class="page-content">
-        <h2>このゲームの目的</h2>
-        <p>このゲームは，全ての英語を学ぶ日本人の単語力を向上させるためのゲームです。</p>
-        <h2>遊び方</h2>
-        <p>育成を開始すると，単語の問題が出てきます。</p>
-        <p>答えてXPを稼ぎましょう</p>
-    </div>
+    <!-- メインコンテンツ -->
+    <main class="flex-grow max-w-4xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8">
 
-    <!-- 画面3：オンライン対戦 -->
-    <div id="page-online" class="page-content">
-        <h2>オンライン対戦について</h2>
-        <p>お友達や家族と一緒にしたいときにはオンライン対戦をしましょう。</p>
-    </div>
+        <!-- ========================================== -->
+        <!-- 画面1：ホーム (草原ヒーローセクション) -->
+        <!-- ========================================== -->
+        <section id="page-home" class="page-content active">
+            <!-- ヒーローカード -->
+            <div class="meadow-hero-bg rounded-3xl p-8 sm:p-12 text-white shadow-xl shadow-meadow-900/10 text-center relative overflow-hidden mb-8 border-4 border-white/30">
+                <!-- 装飾用背景要素（お日様・風・葉っぱ） -->
+                <div class="absolute -top-12 -right-12 w-40 h-40 bg-sunshine-400/30 rounded-full blur-2xl pointer-events-none"></div>
+                <div class="absolute top-4 left-6 text-white/20 text-4xl animate-float">
+                    <i class="fa-solid fa-cloud"></i>
+                </div>
+                <div class="absolute bottom-10 right-8 text-white/20 text-3xl animate-float" style="animation-delay: 2s;">
+                    <i class="fa-solid fa-clover"></i>
+                </div>
 
-    <!-- 画面4：プライバシーポリシー -->
-    <div id="page-privacy" class="page-content">
-        <h2>プライバシーポリシー</h2>
-        <p>ご利用いただくためにアカウント作成時に入力していただいたメールアドレスは...</p>
-    </div>
+                <span class="inline-flex items-center gap-1.5 bg-white/25 backdrop-blur-md text-white text-xs font-black px-4 py-1.5 rounded-full mb-4 border border-white/40 shadow-sm">
+                    <i class="fa-solid fa-sparkles text-sunshine-400"></i> 完全無料・安心の無広告
+                </span>
 
-    <!-- 画面切り替え用JavaScript -->
+                <h2 class="text-2xl sm:text-4xl font-black mb-3 leading-snug tracking-wide text-white drop-shadow-sm">
+                    英単語を楽しく暗記しよう！
+                </h2>
+                <p class="text-meadow-50 text-base sm:text-lg mb-8 max-w-xl mx-auto font-medium leading-relaxed drop-shadow-sm">
+                    ハッチョリアが提供する英単語ゲーム。<br class="hidden sm:inline">お友達やご家族と一緒に、広大な草原を冒険するように学べます。
+                </p>
+
+                <!-- ゲームへ移動するメインボタン -->
+                <a href="https://hedgebirdcat.github.io/Hatchoria/" target="_blank" rel="noopener noreferrer" 
+                   class="cta-pulse inline-flex items-center justify-center gap-3 bg-gradient-to-r from-sunshine-400 to-amber-500 hover:from-sunshine-500 hover:to-amber-600 text-slate-900 font-black text-lg sm:text-xl px-8 sm:px-10 py-4 sm:py-5 rounded-2xl shadow-lg border-2 border-white/80 hover:scale-105 active:scale-95 transition-all group">
+                    <i class="fa-solid fa-circle-play text-2xl text-slate-900 group-hover:rotate-12 transition-transform"></i>
+                    <span>ゲームはこちらから</span>
+                    <i class="fa-solid fa-up-right-from-square text-sm text-slate-800 opacity-70"></i>
+                </a>
+            </div>
+
+            <!-- 目次（コンテンツ案内） -->
+            <div class="bg-white/90 backdrop-blur-sm rounded-3xl p-6 sm:p-8 shadow-md shadow-meadow-900/5 border-2 border-meadow-100">
+                <div class="flex items-center gap-3 mb-6 pb-3 border-b-2 border-meadow-100">
+                    <div class="w-9 h-9 rounded-xl bg-meadow-100 text-meadow-600 flex items-center justify-center font-bold text-lg">
+                        <i class="fa-solid fa-compass"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-black text-meadow-900">目次 <span class="text-xs font-bold text-meadow-500 uppercase tracking-wider ml-1">contents</span></h3>
+                        <p class="text-xs text-slate-500">気になる項目をタップして移動できます</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <button onclick="showPage('asobikata')" class="flex items-center gap-4 p-4 rounded-2xl border-2 border-meadow-100 bg-meadow-50/40 hover:bg-meadow-100/60 hover:border-meadow-300 transition-all text-left group">
+                        <div class="w-11 h-11 rounded-xl bg-meadow-500 text-white flex items-center justify-center text-lg font-black shadow-md shadow-meadow-500/20 group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-book-open"></i>
+                        </div>
+                        <div>
+                            <div class="font-bold text-slate-800 group-hover:text-meadow-800 text-base">目的・遊び方</div>
+                            <div class="text-xs text-slate-500">ゲームのルールとレベル上げ</div>
+                        </div>
+                    </button>
+
+                    <button onclick="showPage('online')" class="flex items-center gap-4 p-4 rounded-2xl border-2 border-sky-100 bg-sky-50/40 hover:bg-sky-100/60 hover:border-sky-300 transition-all text-left group">
+                        <div class="w-11 h-11 rounded-xl bg-sky-500 text-white flex items-center justify-center text-lg font-black shadow-md shadow-sky-500/20 group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-wifi"></i>
+                        </div>
+                        <div>
+                            <div class="font-bold text-slate-800 group-hover:text-sky-800 text-base">オンライン対戦</div>
+                            <div class="text-xs text-slate-500">友達やご家族と勝負！</div>
+                        </div>
+                    </button>
+
+                    <button onclick="showPage('privacy')" class="flex items-center gap-4 p-4 rounded-2xl border-2 border-emerald-100 bg-emerald-50/40 hover:bg-emerald-100/60 hover:border-emerald-300 transition-all text-left group">
+                        <div class="w-11 h-11 rounded-xl bg-emerald-600 text-white flex items-center justify-center text-lg font-black shadow-md shadow-emerald-600/20 group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-shield"></i>
+                        </div>
+                        <div>
+                            <div class="font-bold text-slate-800 group-hover:text-emerald-800 text-base">ポリシーと著作権</div>
+                            <div class="text-xs text-slate-500">個人情報の取り扱い</div>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- 画面2：このゲームの目的 & 遊び方 -->
+        <!-- ========================================== -->
+        <section id="page-asobikata" class="page-content space-y-6">
+            <!-- 目的 -->
+            <div class="bg-white/90 backdrop-blur-sm rounded-3xl p-6 sm:p-8 shadow-md shadow-meadow-900/5 border-2 border-meadow-100 relative overflow-hidden">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="w-10 h-10 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center font-black text-lg border border-amber-200">
+                        <i class="fa-solid fa-bullseye"></i>
+                    </span>
+                    <h2 class="text-xl font-black text-slate-800">このゲームの目的</h2>
+                </div>
+                
+                <div class="space-y-3 text-slate-700 leading-relaxed">
+                    <p class="p-4 bg-meadow-50/80 rounded-2xl border-l-4 border-meadow-500 text-meadow-900 font-medium">
+                        このゲームは、全ての英語を学ぶ日本人の単語力を向上させるためのゲームです。
+                    </p>
+                    <p class="px-1">
+                        単語力を磨くための道具として、ぜひゲーム感覚でご活用ください。
+                    </p>
+                    <div class="p-4 bg-amber-50/60 rounded-2xl border border-amber-200/80 text-xs text-amber-900/80 flex items-start gap-2.5">
+                        <i class="fa-solid fa-triangle-exclamation text-amber-500 text-sm mt-0.5"></i>
+                        <span>その他の悪用目的、営利目的（教育道具として活用し、オプション料などを要求することも含む）の使用はご遠慮ください。</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 遊び方 -->
+            <div class="bg-white/90 backdrop-blur-sm rounded-3xl p-6 sm:p-8 shadow-md shadow-meadow-900/5 border-2 border-meadow-100">
+                <div class="flex items-center gap-3 mb-6">
+                    <span class="w-10 h-10 rounded-2xl bg-meadow-100 text-meadow-600 flex items-center justify-center font-black text-lg border border-meadow-200">
+                        <i class="fa-solid fa-gamepad"></i>
+                    </span>
+                    <h2 class="text-xl font-black text-slate-800">遊び方の流れ</h2>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="bg-meadow-50/50 rounded-2xl p-5 border-2 border-meadow-100 relative group hover:bg-white hover:border-meadow-300 transition-all">
+                        <span class="text-3xl font-black text-meadow-200 absolute right-3 top-2 group-hover:text-meadow-400 transition-colors">01</span>
+                        <div class="w-8 h-8 rounded-lg bg-meadow-500 text-white flex items-center justify-center font-bold mb-3 shadow-sm">
+                            <i class="fa-solid fa-play text-xs"></i>
+                        </div>
+                        <h3 class="font-black text-slate-800 mb-1">育成を開始</h3>
+                        <p class="text-xs text-slate-600 leading-relaxed">育成を開始すると、単語の問題がどんどん出てきます。</p>
+                    </div>
+
+                    <div class="bg-meadow-50/50 rounded-2xl p-5 border-2 border-meadow-100 relative group hover:bg-white hover:border-meadow-300 transition-all">
+                        <span class="text-3xl font-black text-meadow-200 absolute right-3 top-2 group-hover:text-meadow-400 transition-colors">02</span>
+                        <div class="w-8 h-8 rounded-lg bg-meadow-500 text-white flex items-center justify-center font-bold mb-3 shadow-sm">
+                            <i class="fa-solid fa-bolt text-xs"></i>
+                        </div>
+                        <h3 class="font-black text-slate-800 mb-1">答えてXP稼ぎ</h3>
+                        <p class="text-xs text-slate-600 leading-relaxed">正解を重ねてXP（経験値）をたくさん稼ぎましょう！</p>
+                    </div>
+
+                    <div class="bg-meadow-50/50 rounded-2xl p-5 border-2 border-meadow-100 relative group hover:bg-white hover:border-meadow-300 transition-all">
+                        <span class="text-3xl font-black text-meadow-200 absolute right-3 top-2 group-hover:text-meadow-400 transition-colors">03</span>
+                        <div class="w-8 h-8 rounded-lg bg-meadow-500 text-white flex items-center justify-center font-bold mb-3 shadow-sm">
+                            <i class="fa-solid fa-coins text-xs"></i>
+                        </div>
+                        <h3 class="font-black text-slate-800 mb-1">レベルアップ</h3>
+                        <p class="text-xs text-slate-600 leading-relaxed">レベルが1上がるごとに、10コイン獲得できます。</p>
+                    </div>
+
+                    <div class="bg-meadow-50/50 rounded-2xl p-5 border-2 border-meadow-100 relative group hover:bg-white hover:border-meadow-300 transition-all">
+                        <span class="text-3xl font-black text-meadow-200 absolute right-3 top-2 group-hover:text-meadow-400 transition-colors">04</span>
+                        <div class="w-8 h-8 rounded-lg bg-meadow-500 text-white flex items-center justify-center font-bold mb-3 shadow-sm">
+                            <i class="fa-solid fa-gift text-xs"></i>
+                        </div>
+                        <h3 class="font-black text-slate-800 mb-1">ガチャで強化</h3>
+                        <p class="text-xs text-slate-600 leading-relaxed">コインが貯まったらガチャを引き、キャラクターを強化！</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- 画面3：オンライン対戦について -->
+        <!-- ========================================== -->
+        <section id="page-online" class="page-content">
+            <div class="bg-white/90 backdrop-blur-sm rounded-3xl p-6 sm:p-8 shadow-md shadow-meadow-900/5 border-2 border-meadow-100">
+                <div class="flex items-center gap-3 mb-6">
+                    <span class="w-10 h-10 rounded-2xl bg-sky-100 text-sky-600 flex items-center justify-center font-black text-lg border border-sky-200">
+                        <i class="fa-solid fa-users-rays"></i>
+                    </span>
+                    <h2 class="text-xl font-black text-slate-800">オンライン対戦について</h2>
+                </div>
+
+                <div class="space-y-4">
+                    <div class="flex gap-4 items-start p-5 bg-sky-50/50 rounded-2xl border-2 border-sky-100 hover:border-sky-200 transition-all">
+                        <div class="w-10 h-10 rounded-xl bg-sky-500 text-white flex items-center justify-center shrink-0 shadow-sm mt-0.5">
+                            <i class="fa-solid fa-people-group"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-slate-800 text-base mb-1">お友達や家族と一緒に暗記</h3>
+                            <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">誰かと一緒に楽しく競い合いたいときは、ぜひオンライン対戦モードをご利用ください。</p>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-4 items-start p-5 bg-sky-50/50 rounded-2xl border-2 border-sky-100 hover:border-sky-200 transition-all">
+                        <div class="w-10 h-10 rounded-xl bg-sky-500 text-white flex items-center justify-center shrink-0 shadow-sm mt-0.5">
+                            <i class="fa-solid fa-globe"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-slate-800 text-base mb-1">ネット環境があればいつでもプレイ可能</h3>
+                            <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">インターネットに接続されていれば誰でも遊べます。（※通信料がかかる場合がございます）</p>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-4 items-start p-5 bg-sky-50/50 rounded-2xl border-2 border-sky-100 hover:border-sky-200 transition-all">
+                        <div class="w-10 h-10 rounded-xl bg-sky-500 text-white flex items-center justify-center shrink-0 shadow-sm mt-0.5">
+                            <i class="fa-solid fa-user-plus"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-slate-800 text-base mb-1">フレンドコードで簡単につながる</h3>
+                            <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">遊びたい相手にフレンドコードを教えて友達追加してもらうだけで、すぐに一緒に遊べるようになります。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- 画面4：プライバシーポリシー・著作権 -->
+        <!-- ========================================== -->
+        <section id="page-privacy" class="page-content space-y-6">
+            <!-- プライバシーポリシー -->
+            <div class="bg-white/90 backdrop-blur-sm rounded-3xl p-6 sm:p-8 shadow-md shadow-meadow-900/5 border-2 border-meadow-100">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="w-10 h-10 rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center font-black text-lg border border-emerald-200">
+                        <i class="fa-solid fa-user-shield"></i>
+                    </span>
+                    <h2 class="text-xl font-black text-slate-800">プライバシーポリシー</h2>
+                </div>
+                
+                <div class="text-slate-700 leading-relaxed space-y-3 text-sm">
+                    <p class="p-4 bg-emerald-50/60 rounded-2xl border border-emerald-100 text-slate-700">
+                        ご利用いただくためにアカウント作成時に入力していただいたメールアドレスは、利用者のみなさんに大切なお知らせをお送りすること以外には使用いたしません。
+                    </p>
+                    <p class="px-2">
+                        また、第三者に共有することも一切ございません。ご安心ください。
+                    </p>
+                    <div class="p-4 bg-meadow-100/50 rounded-2xl border border-meadow-200 text-xs text-meadow-900 font-bold flex items-center gap-2 mt-4">
+                        <i class="fa-solid fa-circle-info text-meadow-600 text-base"></i>
+                        <span>何か気になる点がありましたら、ハッチョリアまでお気軽にお問い合わせください。</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 著作権について -->
+            <div class="bg-white/90 backdrop-blur-sm rounded-3xl p-6 sm:p-8 shadow-md shadow-meadow-900/5 border-2 border-meadow-100">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="w-10 h-10 rounded-2xl bg-slate-100 text-slate-600 flex items-center justify-center font-black text-lg border border-slate-200">
+                        <i class="fa-solid fa-copyright"></i>
+                    </span>
+                    <h2 class="text-xl font-black text-slate-800">著作権について</h2>
+                </div>
+                <p class="text-slate-600 text-xs sm:text-sm leading-relaxed">
+                    本Webサイトおよびゲーム内の文章、画像、データ等に関する著作権は、ハッチョリアに帰属します。無断転載・営利目的の複製および二次利用は固くお断りいたします。
+                </p>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- フッター -->
+    <footer class="mt-auto border-t-2 border-meadow-200 bg-white/60 backdrop-blur-sm py-6">
+        <div class="max-w-4xl mx-auto px-4 text-center">
+            <div class="flex justify-center items-center gap-2 text-meadow-600 text-lg mb-2">
+                <i class="fa-solid fa-leaf"></i>
+                <i class="fa-solid fa-seedling"></i>
+                <i class="fa-solid fa-clover"></i>
+            </div>
+            <p class="text-xs text-meadow-800 font-bold">&copy; ハッチョリア (Hatchoria) All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript：画面切り替え（SPAロジック） -->
     <script>
+        /**
+         * タブ画面を切り替える関数
+         * @param {string} pageId - 表示するページ識別子 ('home' | 'asobikata' | 'online' | 'privacy')
+         */
         function showPage(pageId) {
-            // 全ての画面を隠す
+            // 1. 全てのページコンテンツを非表示にする
             const pages = document.querySelectorAll('.page-content');
-            pages.forEach(page => page.classList.remove('active'));
+            pages.forEach(page => {
+                page.classList.remove('active');
+            });
 
-            // 指定された画面だけ表示する
+            // 2. 選択されたページを表示する
             const targetPage = document.getElementById('page-' + pageId);
             if (targetPage) {
                 targetPage.classList.add('active');
             }
+
+            // 3. ナビゲーションボタンのアクティブ状態を更新する
+            const buttons = document.querySelectorAll('.nav-btn');
+            buttons.forEach(btn => {
+                btn.classList.remove('bg-white', 'shadow-sm', 'text-meadow-800', 'shadow-meadow-900/5');
+                btn.classList.add('text-meadow-700');
+            });
+
+            const activeTab = document.getElementById('tab-' + pageId);
+            if (activeTab) {
+                activeTab.classList.add('bg-white', 'shadow-sm', 'text-meadow-800', 'shadow-meadow-900/5');
+                activeTab.classList.remove('text-meadow-700');
+            }
+
+            // 4. ページ先頭にスムーズスクロール
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     </script>
 </body>
