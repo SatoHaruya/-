@@ -60,7 +60,6 @@
             gap: 8px;
             backdrop-filter: blur(4px);
             transition: all 0.3s ease;
-            white-space: nowrap;
         }
 
         .server-status-badge:hover {
@@ -95,21 +94,34 @@
             }
         }
 
-        /* 重なりを防ぐための固定幅・透過度アニメーション */
-        .server-status-text {
-            color: #ffffff;
-            font-weight: bold;
+        /* 文字が完全に同じ位置で重ならず入れ替わる構造 */
+        .server-status-text-wrapper {
+            position: relative;
             display: inline-block;
-            white-space: nowrap;
-            min-width: 175px;
-            text-align: left;
-            opacity: 1;
-            transition: opacity 0.25s ease-in-out;
+            height: 1.2em;
+            width: 180px; /* 日本語と英語どちらも収まる幅 */
+            overflow: hidden;
+            vertical-align: middle;
         }
 
-        /* テキスト切り替え用のフェードアウトクラス */
-        .server-status-text.fade-out {
+        .status-text {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            color: #ffffff;
+            font-weight: bold;
+            text-align: left;
+            white-space: nowrap;
             opacity: 0;
+            transition: opacity 0.2s linear;
+            pointer-events: none;
+        }
+
+        .status-text.active {
+            opacity: 1;
+            pointer-events: auto;
         }
 
         h1 {
@@ -282,7 +294,10 @@
         <div class="server-status-container">
             <div id="server-status-box" class="server-status-badge">
                 <span id="server-status-dot" class="server-status-dot"></span>
-                <span id="server-status-text" class="server-status-text">サーバー運行情報：正常</span>
+                <div class="server-status-text-wrapper">
+                    <span id="status-ja" class="status-text active">サーバー運行情報：正常</span>
+                    <span id="status-en" class="status-text">Server Status: Normal</span>
+                </div>
             </div>
         </div>
 
@@ -333,7 +348,7 @@
         <div id="page-privacy" class="page-content">
             <h2>プライバシーポリシー</h2>
             <p>ご利用いただくためにアカウント作成時に入力していただいたメールアドレスは、利用者のみなさんに大切なお知らせをお送りすること以外には使用致しませんとともに、第三者に共有することも致しません。ご安心ください。</p>
-            <p>何か気になる点がありましたら、ゲーム内よりハッチョリアまでお願い致します。</p>
+            <p>何か気になる点がありましたら、ハッチョリアまでお願い致します。</p>
         </div>
     </div>
 
@@ -391,39 +406,41 @@
 
         // --- サーバー運行情報の状態・テキスト切り替え処理 ---
         let currentStatus = 'normal'; // 初期状態: normal (normal, delay, error)
-        let isJapanese = true;         // 言語フラグ
+        let isJapanese = true;
 
-        // 各ステータスのテキスト定義
         const statusTexts = {
             normal: { ja: 'サーバー運行情報：正常', en: 'Server Status: Normal' },
             delay:  { ja: 'サーバー運行情報：遅延中', en: 'Server Status: Delayed' },
             error:  { ja: 'サーバー運行情報：異常発生', en: 'Server Status: Issue Detected' }
         };
 
-        // 1秒ごとに日本語・英語を交互切り替え（フェードによる重複防止付き）
+        const statusJaEl = document.getElementById('status-ja');
+        const statusEnEl = document.getElementById('status-en');
+
+        // 1.2秒ごとに日本語と英語を交互に表示（絶対配置＋opacity制御により文字の重ね合わせ・ずれを完全に解消）
         setInterval(() => {
-            const textEl = document.getElementById('server-status-text');
-            
-            // 1. まず文字を完全に消す (フェードアウト 250ms)
-            textEl.classList.add('fade-out');
+            isJapanese = !isJapanese;
+            if (isJapanese) {
+                statusEnEl.classList.remove('active');
+                setTimeout(() => {
+                    statusJaEl.classList.add('active');
+                }, 100);
+            } else {
+                statusJaEl.classList.remove('active');
+                setTimeout(() => {
+                    statusEnEl.classList.add('active');
+                }, 100);
+            }
+        }, 1200);
 
-            // 2. 消えきってから文字を差し替えて再表示 (フェードイン)
-            setTimeout(() => {
-                isJapanese = !isJapanese;
-                textEl.textContent = isJapanese ? statusTexts[currentStatus].ja : statusTexts[currentStatus].en;
-                textEl.classList.remove('fade-out');
-            }, 250); 
-        }, 1000);
-
-        // ステータス（正常・遅延・異常）を手動で切り替えたい時に呼ぶ関数
+        // ステータス（正常・遅延・異常）を変更する場合の関数
         function updateServerStatus(status) {
             currentStatus = status;
             const box = document.getElementById('server-status-box');
             const dot = document.getElementById('server-status-dot');
-            const textEl = document.getElementById('server-status-text');
 
-            // 即時テキスト更新
-            textEl.textContent = isJapanese ? statusTexts[status].ja : statusTexts[status].en;
+            statusJaEl.textContent = statusTexts[status].ja;
+            statusEnEl.textContent = statusTexts[status].en;
 
             if (status === 'normal') {
                 box.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
