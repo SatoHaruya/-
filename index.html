@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>英単語暗記ゲーム - ハッチョリア</title>
     <style>
-        /* 全体スタイル */
         :root {
             --primary-color: #2e7d32;
             --primary-light: #4caf50;
@@ -13,6 +12,10 @@
             --bg-color: #e8f5e9;
             --card-bg: #ffffff;
             --text-color: #2c3e50;
+        }
+
+        * {
+            box-sizing: border-box;
         }
 
         body {
@@ -29,7 +32,7 @@
             line-height: 1.6;
         }
 
-        /* ヘッダー（右上にステータス表示を置くため relative を指定） */
+        /* ヘッダー */
         header {
             position: relative;
             background: linear-gradient(135deg, #2e7d32, #66bb6a);
@@ -49,14 +52,15 @@
         .server-status-badge {
             background-color: rgba(255, 255, 255, 0.2);
             border: 1px solid rgba(255, 255, 255, 0.4);
-            padding: 6px 14px;
+            padding: 6px 16px;
             border-radius: 20px;
             font-size: 0.85rem;
-            display: flex;
+            display: inline-flex;
             align-items: center;
             gap: 8px;
             backdrop-filter: blur(4px);
             transition: all 0.3s ease;
+            white-space: nowrap;
         }
 
         .server-status-badge:hover {
@@ -71,6 +75,7 @@
             background-color: #86efac;
             border-radius: 50%;
             display: inline-block;
+            flex-shrink: 0;
             transition: background-color 0.3s ease;
             animation: pulse 2s infinite ease-in-out;
         }
@@ -90,16 +95,20 @@
             }
         }
 
+        /* 重なりを防ぐための固定幅・透過度アニメーション */
         .server-status-text {
             color: #ffffff;
             font-weight: bold;
-            transition: opacity 0.3s ease;
-            min-width: 150px;
+            display: inline-block;
+            white-space: nowrap;
+            min-width: 175px;
             text-align: left;
+            opacity: 1;
+            transition: opacity 0.25s ease-in-out;
         }
 
-        /* 切り替え時のふんわりアニメーション用 */
-        .fade-out {
+        /* テキスト切り替え用のフェードアウトクラス */
+        .server-status-text.fade-out {
             opacity: 0;
         }
 
@@ -358,7 +367,6 @@
         </div>
     </footer>
 
-    <!-- スクリプト処理 -->
     <script>
         // 画面切り替え関数
         function showPage(pageId) {
@@ -392,19 +400,20 @@
             error:  { ja: 'サーバー運行情報：異常発生', en: 'Server Status: Issue Detected' }
         };
 
-        // 1秒ごとに日本語・英語を自動交互切り替え
+        // 1秒ごとに日本語・英語を交互切り替え（フェードによる重複防止付き）
         setInterval(() => {
             const textEl = document.getElementById('server-status-text');
             
-            // ふんわり切り替えるためのクラス操作
+            // 1. まず文字を完全に消す (フェードアウト 250ms)
             textEl.classList.add('fade-out');
 
+            // 2. 消えきってから文字を差し替えて再表示 (フェードイン)
             setTimeout(() => {
                 isJapanese = !isJapanese;
                 textEl.textContent = isJapanese ? statusTexts[currentStatus].ja : statusTexts[currentStatus].en;
                 textEl.classList.remove('fade-out');
-            }, 200); // 200msで文字を入れ替え
-        }, 1000); // 1000ms (1秒) ごとに発動
+            }, 250); 
+        }, 1000);
 
         // ステータス（正常・遅延・異常）を手動で切り替えたい時に呼ぶ関数
         function updateServerStatus(status) {
