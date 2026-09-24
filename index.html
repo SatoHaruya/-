@@ -32,17 +32,15 @@
             line-height: 1.6;
         }
 
-        /* ヘッダー */
         header {
             position: relative;
             background: linear-gradient(135deg, #2e7d32, #66bb6a);
             color: white;
             text-align: center;
-            padding: 50px 20px 30px;
+            padding: 55px 20px 35px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
 
-        /* ヘッダー右上のサーバー運行情報 */
         .server-status-container {
             position: absolute;
             top: 15px;
@@ -67,7 +65,6 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
         }
 
-        /* 点滅するランプ */
         .server-status-dot {
             height: 8px;
             width: 8px;
@@ -75,31 +72,20 @@
             border-radius: 50%;
             display: inline-block;
             flex-shrink: 0;
-            transition: background-color 0.3s ease;
             animation: pulse 2s infinite ease-in-out;
         }
 
         @keyframes pulse {
-            0% {
-                opacity: 1;
-                transform: scale(1);
-            }
-            50% {
-                opacity: 0.4;
-                transform: scale(0.85);
-            }
-            100% {
-                opacity: 1;
-                transform: scale(1);
-            }
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.35; transform: scale(0.8); }
+            100% { opacity: 1; transform: scale(1); }
         }
 
-        /* 文字が完全に同じ位置で重ならず入れ替わる構造 */
         .server-status-text-wrapper {
             position: relative;
             display: inline-block;
             height: 1.2em;
-            width: 180px; /* 日本語と英語どちらも収まる幅 */
+            width: 180px;
             overflow: hidden;
             vertical-align: middle;
         }
@@ -115,13 +101,13 @@
             text-align: left;
             white-space: nowrap;
             opacity: 0;
-            transition: opacity 0.2s linear;
-            pointer-events: none;
+            visibility: hidden;
+            transition: opacity 0.25s linear, visibility 0.25s linear;
         }
 
         .status-text.active {
             opacity: 1;
-            pointer-events: auto;
+            visibility: visible;
         }
 
         h1 {
@@ -135,14 +121,12 @@
             opacity: 0.9;
         }
 
-        /* メインコンテンツエリア */
         .main-container {
             max-width: 800px;
-            margin: 20px auto;
+            margin: 25px auto;
             padding: 0 15px;
         }
 
-        /* ナビゲーションボタン */
         .nav-menu {
             display: flex;
             justify-content: center;
@@ -161,7 +145,7 @@
             border-radius: 20px;
             font-weight: bold;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.2s ease;
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
 
@@ -171,7 +155,6 @@
             color: white;
         }
 
-        /* カード（画面コンテンツ） */
         .page-content {
             display: none;
             background: var(--card-bg);
@@ -201,21 +184,21 @@
             font-weight: bold;
             border-radius: 30px;
             box-shadow: 0 4px 10px rgba(245, 124, 0, 0.3);
-            transition: transform 0.2s;
+            transition: transform 0.2s, box-shadow 0.2s;
         }
 
         .game-btn:hover {
             transform: translateY(-2px);
+            box-shadow: 0 6px 14px rgba(245, 124, 0, 0.4);
         }
 
         h2 {
             color: var(--primary-color);
             border-bottom: 2px solid var(--accent-color);
-            padding-bottom: 5px;
+            padding-bottom: 6px;
             margin-top: 0;
         }
 
-        /* フッターエリア */
         .site-footer {
             background-color: #ffffff;
             color: #333;
@@ -227,10 +210,13 @@
         .footer-container {
             max-width: 900px;
             margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 25px;
         }
 
         .footer-section {
-            margin-bottom: 25px;
+            margin-bottom: 10px;
         }
 
         .footer-title {
@@ -248,8 +234,8 @@
             padding: 0;
             margin: 0;
             display: flex;
-            flex-wrap: wrap;
-            gap: 10px 20px;
+            flex-direction: column;
+            gap: 8px;
         }
 
         .footer-links li a {
@@ -266,14 +252,15 @@
         }
 
         .footer-bottom {
+            grid-column: 1 / -1;
             text-align: center;
             padding-top: 20px;
             border-top: 1px solid #eee;
             font-size: 0.8rem;
             color: #777;
+            margin-top: 10px;
         }
 
-        /* スマホ対応 */
         @media (max-width: 600px) {
             header {
                 padding-top: 60px;
@@ -290,7 +277,6 @@
 <body>
 
     <header>
-        <!-- 右上のサーバー運行情報 -->
         <div class="server-status-container">
             <div id="server-status-box" class="server-status-badge">
                 <span id="server-status-dot" class="server-status-dot"></span>
@@ -306,7 +292,6 @@
     </header>
 
     <div class="main-container">
-        <!-- 上部ナビゲーション -->
         <ul class="nav-menu">
             <li><button id="btn-home" class="active" onclick="showPage('home')">ホーム</button></li>
             <li><button id="btn-asobikata" onclick="showPage('asobikata')">目的・遊び方</button></li>
@@ -314,7 +299,7 @@
             <li><button id="btn-privacy" onclick="showPage('privacy')">プライバシー</button></li>
         </ul>
 
-        <!-- 画面1: ホーム -->
+        <!-- Home Content Card -->
         <div id="page-home" class="page-content active">
             <h2>楽しく英単語をマスターしよう！</h2>
             <p>お友達や家族と一緒に楽しく暗記できるゲームです。</p>
@@ -325,7 +310,7 @@
             </div>
         </div>
 
-        <!-- 画面2: 目的・遊び方 -->
+        <!-- Purpose & How to Play Card -->
         <div id="page-asobikata" class="page-content">
             <h2>このゲームの目的</h2>
             <p>このゲームは、全ての英語を学ぶ日本人の単語力を向上させるためのゲームです。単語力を磨くための道具としてゲーム感覚でご利用ください。</p>
@@ -336,7 +321,7 @@
             <p>答えてXPを稼ぎましょう！レベルが1上がるごとに10コイン稼げます。コインが貯まったらガチャを引き、キャラクターを強化しましょう。</p>
         </div>
 
-        <!-- 画面3: オンライン対戦 -->
+        <!-- Online Match Info Card -->
         <div id="page-online" class="page-content">
             <h2>オンライン対戦について</h2>
             <p>お友達や家族と一緒にしたいときにはオンライン対戦をしましょう。</p>
@@ -344,15 +329,14 @@
             <p>遊びたい相手にフレンドコードを送り、友達に追加してもらいましょう。それさえすれば誰でも一緒にプレイできるようになります。</p>
         </div>
 
-        <!-- 画面4: プライバシーポリシー -->
+        <!-- Privacy Policy Card -->
         <div id="page-privacy" class="page-content">
             <h2>プライバシーポリシー</h2>
             <p>ご利用いただくためにアカウント作成時に入力していただいたメールアドレスは、利用者のみなさんに大切なお知らせをお送りすること以外には使用致しませんとともに、第三者に共有することも致しません。ご安心ください。</p>
-            <p>何か気になる点がありましたら、ゲーム内よりハッチョリアまでお願い致します。</p>
+            <p>何か気になる点がありましたら、ハッチョリアまでお願い致します。</p>
         </div>
     </div>
 
-    <!-- フッターエリア -->
     <footer class="site-footer">
         <div class="footer-container">
             
@@ -375,6 +359,17 @@
                 </ul>
             </div>
 
+            <div class="footer-section">
+                <div class="footer-title">ゲーム一覧</div>
+                <ul class="footer-links">
+                    <li>
+                        <a href="https://hedgebirdcat.github.io/Hatchoria/" target="_blank" rel="noopener noreferrer" style="font-weight: bold; color: var(--primary-color);">
+                            英単語暗記ゲーム 🎮
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
             <div class="footer-bottom">
                 <p>&copy; 2026 ハッチョリア (Hatchoria). All rights reserved.</p>
             </div>
@@ -383,7 +378,7 @@
     </footer>
 
     <script>
-        // 画面切り替え関数
+        // SPA Tab Navigation Logic
         function showPage(pageId) {
             const pages = document.querySelectorAll('.page-content');
             pages.forEach(page => page.classList.remove('active'));
@@ -404,58 +399,26 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // --- サーバー運行情報の状態・テキスト切り替え処理 ---
-        let currentStatus = 'normal'; // 初期状態: normal (normal, delay, error)
+        // Server Status Rotation Logic
         let isJapanese = true;
-
-        const statusTexts = {
-            normal: { ja: 'サーバー運行情報：正常', en: 'Server Status: Normal' },
-            delay:  { ja: 'サーバー運行情報：遅延中', en: 'Server Status: Delayed' },
-            error:  { ja: 'サーバー運行情報：異常発生', en: 'Server Status: Issue Detected' }
-        };
 
         const statusJaEl = document.getElementById('status-ja');
         const statusEnEl = document.getElementById('status-en');
 
-        // 1.2秒ごとに日本語と英語を交互に表示（絶対配置＋opacity制御により文字の重ね合わせ・ずれを完全に解消）
         setInterval(() => {
             isJapanese = !isJapanese;
             if (isJapanese) {
                 statusEnEl.classList.remove('active');
                 setTimeout(() => {
                     statusJaEl.classList.add('active');
-                }, 100);
+                }, 120);
             } else {
                 statusJaEl.classList.remove('active');
                 setTimeout(() => {
                     statusEnEl.classList.add('active');
-                }, 100);
+                }, 120);
             }
-        }, 1200);
-
-        // ステータス（正常・遅延・異常）を変更する場合の関数
-        function updateServerStatus(status) {
-            currentStatus = status;
-            const box = document.getElementById('server-status-box');
-            const dot = document.getElementById('server-status-dot');
-
-            statusJaEl.textContent = statusTexts[status].ja;
-            statusEnEl.textContent = statusTexts[status].en;
-
-            if (status === 'normal') {
-                box.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
-                box.style.borderColor = 'rgba(255, 255, 255, 0.4)';
-                dot.style.backgroundColor = '#86efac';
-            } else if (status === 'delay') {
-                box.style.backgroundColor = 'rgba(254, 240, 138, 0.3)';
-                box.style.borderColor = '#fde047';
-                dot.style.backgroundColor = '#facc15';
-            } else if (status === 'error') {
-                box.style.backgroundColor = 'rgba(254, 202, 202, 0.3)';
-                box.style.borderColor = '#fca5a5';
-                dot.style.backgroundColor = '#f87171';
-            }
-        }
+        }, 1500);
     </script>
 </body>
 </html>
