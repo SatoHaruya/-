@@ -1,122 +1,448 @@
-/* Google Fonts から洗練されたゴシック体（Noto Sans JP）を読み込み */
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@500;700;900&display=swap');
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>英単語暗記ゲーム - ハッチョリア</title>
+    <style>
+        /* 全体スタイル */
+        :root {
+            --primary-color: #2e7d32;
+            --primary-light: #4caf50;
+            --accent-color: #81c784;
+            --bg-color: #e8f5e9;
+            --card-bg: #ffffff;
+            --text-color: #2c3e50;
+        }
 
-/* 全体基本設定左寄せ配置） */
-body {
-    font-family: 'Noto Sans JP', "Helvetica Neue", Arial, sans-serif;
-    color: #1a1a1a;
-    background-color: #f4f6f8;  /* スタイリッシュなライトグレー */
-    line-height: 1.7;
-    max-width: 800px;
-    margin: 50px auto;
-    padding: 0 20px;
-    letter-spacing: 0.03em;     /* 文字間隔を広げてシャープな印象に */
-    text-align: left;           /* 基本配置を左寄せに指定 */
-}
+        * {
+            box-sizing: border-box;
+        }
 
-/* メインの見出し（左寄せ） */
-h1 {
-    font-size: 1.5rem;
-    font-weight: 900;
-    color: #0f172a;
-    text-align: left;
-    line-height: 1.5;
-    margin-bottom: 8px;
-}
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(#c8e6c9 10%, transparent 11%),
+                radial-gradient(#c8e6c9 10%, transparent 11%);
+            background-size: 30px 30px;
+            background-position: 0 0, 15px 15px;
+            color: var(--text-color);
+            line-height: 1.6;
+        }
 
-/* サブ見出し（左寄せ） */
-.sub-title {
-    font-size: 1rem;
-    color: #64748b;
-    text-align: left;
-    font-weight: 500;
-    margin-top: 0;
-    margin-bottom: 32px;
-}
+        /* ヘッダー */
+        header {
+            position: relative;
+            background: linear-gradient(135deg, #2e7d32, #66bb6a);
+            color: white;
+            text-align: center;
+            padding: 50px 20px 30px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
 
-/* ゲームへのリンクボタン（左寄せ配置） */
-.game-link-container {
-    text-align: left;
-    margin: 32px 0 40px;
-}
+        /* ヘッダー右上のサーバー運行情報（巨大化防止の修正完了） */
+        .server-status-container {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            z-index: 10;
+        }
 
-.game-link-container a {
-    display: inline-block;
-    padding: 16px 40px;
-    background: linear-gradient(135deg, #2563eb, #1d4ed8); /* 青グラデーション */
-    color: #ffffff;
-    font-size: 1.1rem;
-    font-weight: 700;
-    text-decoration: none;
-    border-radius: 8px;           /* シャープな角丸 */
-    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
-    transition: all 0.25s ease;
-    letter-spacing: 0.05em;
-}
+        .server-status-badge {
+            background-color: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            backdrop-filter: blur(4px);
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            max-width: max-content;
+        }
 
-.game-link-container a:hover {
-    background: linear-gradient(135deg, #1d4ed8, #1e40af);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.45);
-}
+        /* 点滅するランプ */
+        .server-status-dot {
+            height: 8px;
+            width: 8px;
+            background-color: #86efac;
+            border-radius: 50%;
+            display: inline-block;
+            transition: background-color 0.3s ease;
+            animation: pulse 2s infinite ease-in-out;
+            flex-shrink: 0;
+        }
 
-/* 目次エリアの設定（左側にアクセントライン） */
-.contents-box {
-    background-color: #ffffff;
-    border-left: 5px solid #2563eb;
-    border-radius: 8px;
-    padding: 28px 32px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
-}
+        @keyframes pulse {
+            0% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.4;
+                transform: scale(0.85);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
 
-.contents-title {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: #0f172a;
-    margin-top: 0;
-    margin-bottom: 20px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid #e2e8f0;
-    display: flex;
-    align-items: baseline;
-    gap: 10px;
-}
+        /* 文字切替用のコンテナ（重ね合わせ構造で崩れを防止） */
+        .server-status-text-wrapper {
+            position: relative;
+            display: inline-block;
+            height: 1.2em;
+            width: 170px;
+        }
 
-.contents-title span {
-    font-size: 0.85rem;
-    color: #94a3b8;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-}
+        .server-status-text {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            color: #ffffff;
+            font-weight: bold;
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+            pointer-events: none;
+            font-size: 0.85rem;
+        }
 
-/* 目次リスト */
-.contents-list {
-    list-style: none;
-    padding-left: 0;
-    margin: 0;
-}
+        .server-status-text.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
 
-.contents-list li {
-    font-size: 1rem;
-    font-weight: 500;
-    margin-bottom: 14px;
-    position: relative;
-    padding-left: 24px;
-    color: #334155;
-    transition: color 0.2s ease;
-}
+        h1 {
+            margin: 10px 0 10px 0;
+            font-size: 1.8rem;
+        }
 
-.contents-list li:last-child {
-    margin-bottom: 0;
-}
+        .sub-title {
+            margin: 0;
+            font-size: 1rem;
+            opacity: 0.9;
+        }
 
-/* 先頭のアイコン風マーク */
-.contents-list li::before {
-    content: "▶";
-    font-size: 0.7rem;
-    color: #2563eb;
-    position: absolute;
-    left: 0;
-    top: 2px;
-}
+        /* メインコンテンツエリア */
+        .main-container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 0 15px;
+        }
+
+        /* ナビゲーションボタン */
+        .nav-menu {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            list-style: none;
+            padding: 0;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .nav-menu button {
+            background-color: white;
+            border: 2px solid var(--primary-light);
+            color: var(--primary-color);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .nav-menu button:hover,
+        .nav-menu button.active {
+            background-color: var(--primary-light);
+            color: white;
+        }
+
+        /* カード（画面コンテンツ） */
+        .page-content {
+            display: none;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border: 1px solid #a5d6a7;
+            margin-bottom: 40px;
+        }
+
+        .page-content.active {
+            display: block;
+        }
+
+        .game-link-container {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .game-btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #ff9800, #f57c00);
+            color: white;
+            padding: 15px 35px;
+            text-decoration: none;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 30px;
+            box-shadow: 0 4px 10px rgba(245, 124, 0, 0.3);
+            transition: transform 0.2s;
+        }
+
+        .game-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        h2 {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 5px;
+            margin-top: 0;
+        }
+
+        /* フッターエリア */
+        .site-footer {
+            background-color: #ffffff;
+            color: #333;
+            padding: 40px 20px 20px;
+            border-top: 2px solid #c8e6c9;
+            margin-top: 50px;
+        }
+
+        .footer-container {
+            max-width: 900px;
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            justify-content: space-between;
+        }
+
+        .footer-section {
+            flex: 1 1 200px;
+            margin-bottom: 15px;
+        }
+
+        .footer-title {
+            font-size: 1rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 4px;
+            margin-bottom: 12px;
+            display: inline-block;
+        }
+
+        .footer-links {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .footer-links li a {
+            color: #555;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+            cursor: pointer;
+        }
+
+        .footer-links li a:hover {
+            color: var(--primary-light);
+            text-decoration: underline;
+        }
+
+        .footer-bottom {
+            width: 100%;
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            font-size: 0.8rem;
+            color: #777;
+            margin-top: 10px;
+        }
+
+        /* スマホ用レスポンシブ調整 */
+        @media (max-width: 600px) {
+            header {
+                padding-top: 50px;
+            }
+            .server-status-container {
+                top: 10px;
+                right: 10px;
+            }
+            .server-status-badge {
+                font-size: 0.75rem;
+                padding: 3px 8px;
+            }
+            .server-status-text-wrapper {
+                width: 135px;
+            }
+            .server-status-text {
+                font-size: 0.75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <!-- 右上のサーバー運行情報（サイズ・位置を固定して巨大化防止） -->
+        <div class="server-status-container">
+            <div id="server-status-box" class="server-status-badge">
+                <span id="server-status-dot" class="server-status-dot"></span>
+                <div class="server-status-text-wrapper">
+                    <span id="status-text-ja" class="server-status-text active">サーバー運行情報：正常</span>
+                    <span id="status-text-en" class="server-status-text">Server Status: Normal</span>
+                </div>
+            </div>
+        </div>
+
+        <h1>英単語暗記ゲーム</h1>
+        <p class="sub-title">ハッチョリアが提供する無料・無広告の暗記ゲーム</p>
+    </header>
+
+    <div class="main-container">
+        <!-- ナビゲーション -->
+        <ul class="nav-menu">
+            <li><button id="btn-home" class="active" onclick="showPage('home')">ホーム</button></li>
+            <li><button id="btn-asobikata" onclick="showPage('asobikata')">目的・遊び方</button></li>
+            <li><button id="btn-online" onclick="showPage('online')">オンライン対戦</button></li>
+            <li><button id="btn-privacy" onclick="showPage('privacy')">プライバシー</button></li>
+        </ul>
+
+        <!-- 画面1: ホーム -->
+        <div id="page-home" class="page-content active">
+            <h2>楽しく英単語をマスターしよう！</h2>
+            <p>お友達や家族と一緒に楽しく暗記できるゲームです。</p>
+            <div class="game-link-container">
+                <a href="https://hedgebirdcat.github.io/Hatchoria/" target="_blank" rel="noopener noreferrer" class="game-btn">
+                    ゲームはこちらから 🎮
+                </a>
+            </div>
+        </div>
+
+        <!-- 画面2: 目的・遊び方 -->
+        <div id="page-asobikata" class="page-content">
+            <h2>このゲームの目的</h2>
+            <p>このゲームは、全ての英語を学ぶ日本人の単語力を向上させるためのゲームです。単語力を磨くための道具としてゲーム感覚でご利用ください。</p>
+            <p><small>※悪用目的、営利目的（教育道具として活用し、オプション料などを要求することも含む）の使用はご遠慮ください。</small></p>
+
+            <h2>遊び方</h2>
+            <p>育成を開始すると、単語の問題が出てきます。</p>
+            <p>答えてXPを稼ぎましょう！レベルが1上がるごとに10コイン稼げます。コインが貯まったらガチャを引き、キャラクターを強化しましょう。</p>
+        </div>
+
+        <!-- 画面3: オンライン対戦 -->
+        <div id="page-online" class="page-content">
+            <h2>オンライン対戦について</h2>
+            <p>お友達や家族と一緒にしたいときにはオンライン対戦をしましょう。</p>
+            <p>インターネットがあれば誰でもプレイすることができます。（※通信量がかかる可能性がございます。）</p>
+            <p>遊びたい相手にフレンドコードを送り、友達に追加してもらいましょう。それさえすれば誰でも一緒にプレイできるようになります。</p>
+        </div>
+
+        <!-- 画面4: プライバシーポリシー -->
+        <div id="page-privacy" class="page-content">
+            <h2>プライバシーポリシー</h2>
+            <p>ご利用いただくためにアカウント作成時に入力していただいたメールアドレスは、利用者のみなさんに大切なお知らせをお送りすること以外には使用致しませんとともに、第三者に共有することも致しません。ご安心ください。</p>
+            <p>何か気になる点がありましたら、ハッチョリアまでお願い致します。</p>
+        </div>
+    </div>
+
+    <!-- フッターエリア -->
+    <footer class="site-footer">
+        <div class="footer-container">
+            
+            <div class="footer-section">
+                <div class="footer-title">ハッチョリアのとりくみ・メニュー</div>
+                <ul class="footer-links">
+                    <li><a onclick="showPage('home')">ホーム</a></li>
+                    <li><a onclick="showPage('asobikata')">このゲームの目的</a></li>
+                    <li><a onclick="showPage('asobikata')">遊び方</a></li>
+                    <li><a onclick="showPage('online')">オンライン対戦について</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <div class="footer-title">規約・お問い合わせ</div>
+                <ul class="footer-links">
+                    <li><a onclick="showPage('privacy')">プライバシーポリシー</a></li>
+                    <li><a onclick="showPage('asobikata')">著作権について</a></li>
+                    <li><a onclick="showPage('privacy')">ご意見・お問い合わせ</a></li>
+                </ul>
+            </div>
+
+            <!-- ご要望いただいた「ゲーム一覧」セクション -->
+            <div class="footer-section">
+                <div class="footer-title">ゲーム一覧</div>
+                <ul class="footer-links">
+                    <li><a href="https://hedgebirdcat.github.io/Hatchoria/" target="_blank" rel="noopener noreferrer" style="font-weight: bold; color: var(--primary-color);">英単語暗記ゲーム 🎮</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2026 ハッチョリア (Hatchoria). All rights reserved.</p>
+            </div>
+
+        </div>
+    </footer>
+
+    <!-- スクリプト処理 -->
+    <script>
+        function showPage(pageId) {
+            const pages = document.querySelectorAll('.page-content');
+            pages.forEach(page => page.classList.remove('active'));
+
+            const buttons = document.querySelectorAll('.nav-menu button');
+            buttons.forEach(btn => btn.classList.remove('active'));
+
+            const targetPage = document.getElementById('page-' + pageId);
+            if (targetPage) {
+                targetPage.classList.add('active');
+            }
+
+            const targetBtn = document.getElementById('btn-' + pageId);
+            if (targetBtn) {
+                targetBtn.classList.add('active');
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // --- サーバー運行情報の文字切り替え処理 ---
+        let isJapanese = true;
+
+        setInterval(() => {
+            const jaEl = document.getElementById('status-text-ja');
+            const enEl = document.getElementById('status-text-en');
+
+            if (isJapanese) {
+                jaEl.classList.remove('active');
+                setTimeout(() => {
+                    enEl.classList.add('active');
+                }, 100);
+            } else {
+                enEl.classList.remove('active');
+                setTimeout(() => {
+                    jaEl.classList.add('active');
+                }, 100);
+            }
+            isJapanese = !isJapanese;
+        }, 1500);
+    </script>
+</body>
+</html>
